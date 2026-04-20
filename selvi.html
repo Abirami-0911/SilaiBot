@@ -174,42 +174,32 @@ async function askSelvi() {
   const occasion = answers.step5;
   const figure = answers.step3;
 
-  const system = `You are Selvi...`; // keep your existing prompt
-
-  const userMsg = `Internal body type: ${bodyType}
+  const userMsg = `Internal body type (never say this to user): ${bodyType}
 Figure: ${figure}
 Fabric: ${fabric}
-Occasion: ${occasion}`;
+Occasion: ${occasion}
+Respond in Tanglish.`;
 
   try {
     const res = await fetch(SERVER + "/selvi", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: userMsg }
-        ]
+        messages: [{ role: "user", content: userMsg }]
       })
     });
 
-    // ✅ FIX
     const parsed = await res.json();
+
+    if (parsed.error) {
+      throw new Error(parsed.error);
+    }
 
     document.getElementById('selvi-text').innerHTML = parsed.greeting;
 
     const cards = document.getElementById('sug-cards');
     cards.innerHTML = '';
-
-    const badgeClass = {
-      'Best Fit': 'best',
-      'Good Fit': 'good',
-      'Try pannu!': 'try'
-    };
-
+    const badgeClass = { 'Best Fit': 'best', 'Good Fit': 'good', 'Try pannu!': 'try' };
     parsed.suggestions.forEach(s => {
       const div = document.createElement('div');
       div.className = 'sug-card';
@@ -232,6 +222,7 @@ Occasion: ${occasion}`;
     document.getElementById('extra-tips').innerHTML =
       `<span style="color:red">Selvi connect aagala akka! ${e.message}</span>`;
     document.getElementById('response').classList.add('visible');
+    document.getElementById('restart').style.display = 'block';
   }
 
   document.getElementById('loading').classList.remove('visible');
