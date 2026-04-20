@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selvi — உங்க AI Tailor</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.wrap { background: white; border-radius: 16px; padding: 1.5rem; max-width: 420px; width: 100%; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+.selvi-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
+.av { width: 44px; height: 44px; border-radius: 50%; background: #EEEDFE; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.selvi-name { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+.selvi-sub { font-size: 12px; color: #888; }
+.bubble { background: #f5f5f0; border-radius: 0 12px 12px 12px; padding: 12px 16px; font-size: 14px; color: #1a1a1a; line-height: 1.6; margin-bottom: 1rem; }
+.step { display: none; }
+.step.active { display: block; }
+.chips { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
+.chip { padding: 10px 16px; border-radius: 10px; border: 1px solid #e0e0e0; font-size: 13px; cursor: pointer; background: white; color: #1a1a1a; text-align: left; transition: all 0.15s; }
+.chip:hover { background: #f5f5f0; }
+.chip.selected { background: #EEEDFE; border-color: #7F77DD; color: #3C3489; font-weight: 500; }
+.next-btn { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e0e0e0; background: white; font-size: 14px; cursor: pointer; color: #1a1a1a; display: none; margin-top: 4px; font-weight: 500; }
+.next-btn.visible { display: block; }
+.next-btn:hover { background: #f5f5f0; }
+.progress { display: flex; gap: 6px; margin-bottom: 1.25rem; }
+.dot { height: 4px; flex: 1; border-radius: 2px; background: #e0e0e0; transition: background 0.3s; }
+.dot.done { background: #7F77DD; }
+.response-box { background: #f5f5f0; border-radius: 12px; padding: 1rem 1.25rem; display: none; margin-top: 1rem; }
+.response-box.visible { display: block; }
+.sug-card { background: white; border: 1px solid #efefef; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+.badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-bottom: 4px; font-weight: 500; }
+.badge.best { background: #EAF3DE; color: #3B6D11; }
+.badge.good { background: #FAEEDA; color: #854F0B; }
+.badge.try { background: #EEEDFE; color: #3C3489; }
+.sug-title { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+.sug-caption { font-size: 12px; color: #666; margin-top: 2px; line-height: 1.5; }
+.loading { font-size: 13px; color: #888; text-align: center; padding: 0.75rem; display: none; }
+.loading.visible { display: block; }
+.restart { font-size: 12px; color: #888; text-align: center; margin-top: 1rem; cursor: pointer; text-decoration: underline; }
+.fabric-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem; }
+.fabric-row .chip { flex: 1 1 calc(50% - 4px); }
+.extra-tips { margin-top: 10px; padding-top: 10px; border-top: 1px solid #e8e8e8; font-size: 12px; color: #666; line-height: 1.9; }
+.greeting-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="selvi-header">
+    <div class="av">🧵</div>
+    <div>
+      <div class="selvi-name">Selvi</div>
+      <div class="selvi-sub">உங்க AI tailor ✨</div>
+    </div>
+  </div>
+
+  <div class="progress">
+    <div class="dot done" id="d1"></div>
+    <div class="dot" id="d2"></div>
+    <div class="dot" id="d3"></div>
+    <div class="dot" id="d4"></div>
+    <div class="dot" id="d5"></div>
+  </div>
+
+  <div class="step active" id="step1">
+    <div class="bubble">Vanakkam akka! 👋 Naan Selvi — உங்க personal tailor da!<br><br>First, oru simple question — உங்க shoulders wide-a irukka, illa hips wide-a irukka?</div>
+    <div class="chips">
+      <div class="chip" onclick="pick(this,'shoulders')">👆 Shoulders more wide-a iruku</div>
+      <div class="chip" onclick="pick(this,'equal')">↔️ Almost same-a iruku</div>
+      <div class="chip" onclick="pick(this,'hips')">👇 Hips more wide-a iruku</div>
+    </div>
+  </div>
+
+  <div class="step" id="step2">
+    <div class="bubble">Ok akka! 😊<br><br>Stomach area-la — konjam extra fullness irukka?</div>
+    <div class="chips">
+      <div class="chip" onclick="pick(this,'yes_tummy')">✔️ Aamaa, konjam iruku</div>
+      <div class="chip" onclick="pick(this,'no_tummy')">➖ Illai, mostly flat</div>
+      <div class="chip" onclick="pick(this,'waist_defined')">⭐ Waist clearly defined-a iruku</div>
+    </div>
+  </div>
+
+  <div class="step" id="step3">
+    <div class="bubble">Super! Overall figure — எந்த category-la feel aaguthu akka?</div>
+    <div class="chips">
+      <div class="chip" onclick="pick(this,'slim')">🌿 Slim / petite side</div>
+      <div class="chip" onclick="pick(this,'medium')">🌸 Medium / average build</div>
+      <div class="chip" onclick="pick(this,'fuller')">💫 Fuller / plus side</div>
+    </div>
+  </div>
+
+  <div class="step" id="step4">
+    <div class="bubble">Almost done akka! 🎉<br><br>Fabric என்ன இருக்கு உங்ககிட்ட?</div>
+    <div class="fabric-row">
+      <div class="chip" onclick="pick(this,'Georgette')">✨ Georgette</div>
+      <div class="chip" onclick="pick(this,'Cotton')">🌾 Cotton</div>
+      <div class="chip" onclick="pick(this,'Silk')">🌟 Silk</div>
+      <div class="chip" onclick="pick(this,'Chiffon')">🫧 Chiffon</div>
+      <div class="chip" onclick="pick(this,'Linen')">🍃 Linen</div>
+      <div class="chip" onclick="pick(this,'Rayon')">💧 Rayon</div>
+    </div>
+  </div>
+
+  <div class="step" id="step5">
+    <div class="bubble">Last question! 🙌<br><br>என்ன occasion-ku stitch panrom akka?</div>
+    <div class="fabric-row">
+      <div class="chip" onclick="pick(this,'Wedding')">💒 Wedding</div>
+      <div class="chip" onclick="pick(this,'Festival')">🪔 Festival</div>
+      <div class="chip" onclick="pick(this,'Office')">💼 Office</div>
+      <div class="chip" onclick="pick(this,'Casual')">☀️ Casual</div>
+      <div class="chip" onclick="pick(this,'Party')">🎉 Party</div>
+      <div class="chip" onclick="pick(this,'College')">📚 College</div>
+    </div>
+  </div>
+
+  <button class="next-btn" id="next-btn" onclick="nextStep()">Next →</button>
+  <div class="loading" id="loading">Selvi suggest panra akka... ✨</div>
+
+  <div class="response-box" id="response">
+    <div class="greeting-row">
+      <div class="av" style="width:28px;height:28px;font-size:14px;">🧵</div>
+      <div id="selvi-text" style="font-size:14px;color:#1a1a1a;line-height:1.6;"></div>
+    </div>
+    <div id="sug-cards"></div>
+    <div class="extra-tips" id="extra-tips"></div>
+  </div>
+
+  <div class="restart" id="restart" style="display:none;" onclick="resetAll()">↩ Start over</div>
+</div>
+
+<script>
+const SERVER = "";
+const answers = {};
+let currentStep = 1;
+const totalSteps = 5;
+
+function pick(el, val) {
+  el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  answers['step' + currentStep] = val;
+  const btn = document.getElementById('next-btn');
+  btn.classList.add('visible');
+  btn.textContent = currentStep === totalSteps ? 'Selvi-kitta kelu ↗' : 'Next →';
+}
+
+function nextStep() {
+  document.getElementById('d' + currentStep).classList.add('done');
+  if (currentStep < totalSteps) {
+    document.getElementById('step' + currentStep).classList.remove('active');
+    currentStep++;
+    document.getElementById('step' + currentStep).classList.add('active');
+    document.getElementById('d' + currentStep).classList.add('done');
+    document.getElementById('next-btn').classList.remove('visible');
+  } else {
+    document.getElementById('step' + currentStep).classList.remove('active');
+    document.getElementById('next-btn').classList.remove('visible');
+    askSelvi();
+  }
+}
+
+function deriveBodyType() {
+  const sh = answers.step1, tummy = answers.step2;
+  if (sh === 'shoulders' && tummy !== 'yes_tummy') return 'Inverted Triangle';
+  if (sh === 'hips' && tummy !== 'yes_tummy') return 'Pear';
+  if (sh === 'equal' && tummy === 'waist_defined') return 'Hourglass';
+  if (tummy === 'yes_tummy') return 'Apple';
+  return 'Rectangle';
+}
+
+async function askSelvi() {
+  document.getElementById('loading').classList.add('visible');
+
+  const bodyType = deriveBodyType();
+  const fabric = answers.step4;
+  const occasion = answers.step5;
+  const figure = answers.step3;
+
+  const system = `You are Selvi...`; // keep your existing prompt
+
+  const userMsg = `Internal body type: ${bodyType}
+Figure: ${figure}
+Fabric: ${fabric}
+Occasion: ${occasion}`;
+
+  try {
+    const res = await fetch(SERVER + "/selvi", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true"
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: userMsg }
+        ]
+      })
+    });
+
+    // ✅ FIX
+    const parsed = await res.json();
+
+    document.getElementById('selvi-text').innerHTML = parsed.greeting;
+
+    const cards = document.getElementById('sug-cards');
+    cards.innerHTML = '';
+
+    const badgeClass = {
+      'Best Fit': 'best',
+      'Good Fit': 'good',
+      'Try pannu!': 'try'
+    };
+
+    parsed.suggestions.forEach(s => {
+      const div = document.createElement('div');
+      div.className = 'sug-card';
+      div.innerHTML =
+        `<span class="badge ${badgeClass[s.label] || 'good'}">${s.label}</span>
+         <div class="sug-title">${s.title}</div>
+         <div class="sug-caption">${s.caption}</div>`;
+      cards.appendChild(div);
+    });
+
+    document.getElementById('extra-tips').innerHTML =
+      `🧵 <b>Fabric tip:</b> ${parsed.fabric_tip}<br>` +
+      `👗 <b>Neck hint:</b> ${parsed.neck_hint}<br>` +
+      `🤫 <b>Selvi secret:</b> ${parsed.selvi_secret}`;
+
+    document.getElementById('response').classList.add('visible');
+    document.getElementById('restart').style.display = 'block';
+
+  } catch (e) {
+    document.getElementById('extra-tips').innerHTML =
+      `<span style="color:red">Selvi connect aagala akka! ${e.message}</span>`;
+    document.getElementById('response').classList.add('visible');
+  }
+
+  document.getElementById('loading').classList.remove('visible');
+}
+
+function resetAll() {
+  currentStep = 1;
+  Object.keys(answers).forEach(k => delete answers[k]);
+  for (let i = 1; i <= totalSteps; i++) {
+    document.getElementById('step' + i).classList.remove('active');
+    document.getElementById('d' + i).classList.remove('done');
+  }
+  document.getElementById('step1').classList.add('active');
+  document.getElementById('d1').classList.add('done');
+  document.getElementById('next-btn').classList.remove('visible');
+  document.getElementById('next-btn').textContent = 'Next →';
+  document.getElementById('response').classList.remove('visible');
+  document.getElementById('restart').style.display = 'none';
+  document.getElementById('loading').classList.remove('visible');
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+}
+</script>
+</body>
+</html>
