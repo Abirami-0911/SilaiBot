@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Selvi — உங்க AI Tailor</title>
+<title>Selvi — Your AI Tailor</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
@@ -19,7 +19,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .chip { padding: 10px 16px; border-radius: 10px; border: 1px solid #e0e0e0; font-size: 13px; cursor: pointer; background: white; color: #1a1a1a; text-align: left; transition: all 0.15s; }
 .chip:hover { background: #f5f5f0; }
 .chip.selected { background: #EEEDFE; border-color: #7F77DD; color: #3C3489; font-weight: 500; }
-.next-btn { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e0e0e0; background: white; font-size: 14px; cursor: pointer; color: #1a1a1a; display: none; margin-top: 4px; font-weight: 500; }
+.btn-row { display: flex; gap: 8px; margin-top: 4px; }
+.prev-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #e0e0e0; background: white; font-size: 14px; cursor: pointer; color: #888; display: none; }
+.prev-btn.visible { display: block; }
+.prev-btn:hover { background: #f5f5f0; }
+.next-btn { flex: 2; padding: 12px; border-radius: 10px; border: 1px solid #e0e0e0; background: white; font-size: 14px; cursor: pointer; color: #1a1a1a; display: none; font-weight: 500; }
 .next-btn.visible { display: block; }
 .next-btn:hover { background: #f5f5f0; }
 .progress { display: flex; gap: 6px; margin-bottom: 1.25rem; }
@@ -27,7 +31,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .dot.done { background: #7F77DD; }
 .response-box { background: #f5f5f0; border-radius: 12px; padding: 1rem 1.25rem; display: none; margin-top: 1rem; }
 .response-box.visible { display: block; }
-.sug-card { background: white; border: 1px solid #efefef; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+.sug-card { background: white; border: 1px solid #efefef; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+.sug-img { width: 100%; height: 160px; object-fit: cover; background: #f0eef8; display: flex; align-items: center; justify-content: center; font-size: 48px; }
+.sug-img img { width: 100%; height: 160px; object-fit: cover; }
+.sug-body { padding: 10px 12px; }
 .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-bottom: 4px; font-weight: 500; }
 .badge.best { background: #EAF3DE; color: #3B6D11; }
 .badge.good { background: #FAEEDA; color: #854F0B; }
@@ -49,7 +56,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <div class="av">🧵</div>
     <div>
       <div class="selvi-name">Selvi</div>
-      <div class="selvi-sub">உங்க AI tailor ✨</div>
+      <div class="selvi-sub">Your AI Tailor ✨</div>
     </div>
   </div>
 
@@ -62,34 +69,34 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   </div>
 
   <div class="step active" id="step1">
-    <div class="bubble">Vanakkam akka! 👋 Naan Selvi — உங்க personal tailor da!<br><br>First, oru simple question — உங்க shoulders wide-a irukka, illa hips wide-a irukka?</div>
+    <div class="bubble">Hi! 👋 I'm Selvi, your personal tailor assistant.<br><br>Quick question — are your shoulders wider, or your hips wider?</div>
     <div class="chips">
-      <div class="chip" onclick="pick(this,'shoulders')">👆 Shoulders more wide-a iruku</div>
-      <div class="chip" onclick="pick(this,'equal')">↔️ Almost same-a iruku</div>
-      <div class="chip" onclick="pick(this,'hips')">👇 Hips more wide-a iruku</div>
+      <div class="chip" onclick="pick(this,'shoulders')">👆 My shoulders are wider</div>
+      <div class="chip" onclick="pick(this,'equal')">↔️ Both are about the same</div>
+      <div class="chip" onclick="pick(this,'hips')">👇 My hips are wider</div>
     </div>
   </div>
 
   <div class="step" id="step2">
-    <div class="bubble">Ok akka! 😊<br><br>Stomach area-la — konjam extra fullness irukka?</div>
+    <div class="bubble">Got it! 😊<br><br>Do you have a little extra fullness around your stomach area?</div>
     <div class="chips">
-      <div class="chip" onclick="pick(this,'yes_tummy')">✔️ Aamaa, konjam iruku</div>
-      <div class="chip" onclick="pick(this,'no_tummy')">➖ Illai, mostly flat</div>
-      <div class="chip" onclick="pick(this,'waist_defined')">⭐ Waist clearly defined-a iruku</div>
+      <div class="chip" onclick="pick(this,'yes_tummy')">✔️ Yes, a little</div>
+      <div class="chip" onclick="pick(this,'no_tummy')">➖ No, mostly flat</div>
+      <div class="chip" onclick="pick(this,'waist_defined')">⭐ My waist is clearly defined</div>
     </div>
   </div>
 
   <div class="step" id="step3">
-    <div class="bubble">Super! Overall figure — எந்த category-la feel aaguthu akka?</div>
+    <div class="bubble">Great! How would you describe your overall figure?</div>
     <div class="chips">
-      <div class="chip" onclick="pick(this,'slim')">🌿 Slim / petite side</div>
-      <div class="chip" onclick="pick(this,'medium')">🌸 Medium / average build</div>
-      <div class="chip" onclick="pick(this,'fuller')">💫 Fuller / plus side</div>
+      <div class="chip" onclick="pick(this,'slim')">🌿 Slim or petite</div>
+      <div class="chip" onclick="pick(this,'medium')">🌸 Medium or average</div>
+      <div class="chip" onclick="pick(this,'fuller')">💫 Fuller or plus size</div>
     </div>
   </div>
 
   <div class="step" id="step4">
-    <div class="bubble">Almost done akka! 🎉<br><br>Fabric என்ன இருக்கு உங்ககிட்ட?</div>
+    <div class="bubble">Almost there! 🎉<br><br>What fabric do you have?</div>
     <div class="fabric-row">
       <div class="chip" onclick="pick(this,'Georgette')">✨ Georgette</div>
       <div class="chip" onclick="pick(this,'Cotton')">🌾 Cotton</div>
@@ -101,7 +108,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   </div>
 
   <div class="step" id="step5">
-    <div class="bubble">Last question! 🙌<br><br>என்ன occasion-ku stitch panrom akka?</div>
+    <div class="bubble">Last one! 🙌<br><br>What is this dress for?</div>
     <div class="fabric-row">
       <div class="chip" onclick="pick(this,'Wedding')">💒 Wedding</div>
       <div class="chip" onclick="pick(this,'Festival')">🪔 Festival</div>
@@ -112,8 +119,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
   </div>
 
-  <button class="next-btn" id="next-btn" onclick="nextStep()">Next →</button>
-  <div class="loading" id="loading">Selvi suggest panra akka... ✨</div>
+  <div class="btn-row">
+    <button class="prev-btn" id="prev-btn" onclick="prevStep()">← Back</button>
+    <button class="next-btn" id="next-btn" onclick="nextStep()">Next →</button>
+  </div>
+
+  <div class="loading" id="loading">Selvi is thinking... ✨</div>
 
   <div class="response-box" id="response">
     <div class="greeting-row">
@@ -133,13 +144,44 @@ const answers = {};
 let currentStep = 1;
 const totalSteps = 5;
 
+const dressImages = {
+  "Anarkali": "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=400&q=80",
+  "A-Line Kurta": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&q=80",
+  "Straight Kurta": "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=400&q=80",
+  "Palazzo Set": "https://images.unsplash.com/photo-1617019114583-affb34d1b3cd?w=400&q=80",
+  "Churidar": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&q=80",
+  "Maxi Dress": "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&q=80",
+  "Salwar Suit": "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=400&q=80",
+  "Peplum Top": "https://images.unsplash.com/photo-1551803091-e20673f15770?w=400&q=80"
+};
+
+function getImage(title) {
+  for (const key of Object.keys(dressImages)) {
+    if (title.toLowerCase().includes(key.toLowerCase())) return dressImages[key];
+  }
+  return null;
+}
+
 function pick(el, val) {
   el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   answers['step' + currentStep] = val;
   const btn = document.getElementById('next-btn');
   btn.classList.add('visible');
-  btn.textContent = currentStep === totalSteps ? 'Selvi-kitta kelu ↗' : 'Next →';
+  btn.textContent = currentStep === totalSteps ? 'Get Suggestions ✨' : 'Next →';
+  if (currentStep > 1) document.getElementById('prev-btn').classList.add('visible');
+}
+
+function prevStep() {
+  if (currentStep <= 1) return;
+  document.getElementById('step' + currentStep).classList.remove('active');
+  document.getElementById('d' + currentStep).classList.remove('done');
+  currentStep--;
+  document.getElementById('step' + currentStep).classList.add('active');
+  document.getElementById('next-btn').classList.add('visible');
+  document.getElementById('next-btn').textContent = currentStep === totalSteps ? 'Get Suggestions ✨' : 'Next →';
+  if (currentStep === 1) document.getElementById('prev-btn').classList.remove('visible');
+  if (answers['step' + currentStep]) document.getElementById('next-btn').classList.add('visible');
 }
 
 function nextStep() {
@@ -150,9 +192,12 @@ function nextStep() {
     document.getElementById('step' + currentStep).classList.add('active');
     document.getElementById('d' + currentStep).classList.add('done');
     document.getElementById('next-btn').classList.remove('visible');
+    document.getElementById('prev-btn').classList.add('visible');
+    if (answers['step' + currentStep]) document.getElementById('next-btn').classList.add('visible');
   } else {
     document.getElementById('step' + currentStep).classList.remove('active');
     document.getElementById('next-btn').classList.remove('visible');
+    document.getElementById('prev-btn').classList.remove('visible');
     askSelvi();
   }
 }
@@ -177,8 +222,7 @@ async function askSelvi() {
   const userMsg = `Internal body type (never say this to user): ${bodyType}
 Figure: ${figure}
 Fabric: ${fabric}
-Occasion: ${occasion}
-Respond in Tanglish.`;
+Occasion: ${occasion}`;
 
   try {
     const res = await fetch(SERVER + "/selvi", {
@@ -190,37 +234,41 @@ Respond in Tanglish.`;
     });
 
     const parsed = await res.json();
-
-    if (parsed.error) {
-      throw new Error(parsed.error);
-    }
+    if (parsed.error) throw new Error(parsed.error);
 
     document.getElementById('selvi-text').innerHTML = parsed.greeting;
 
     const cards = document.getElementById('sug-cards');
     cards.innerHTML = '';
     const badgeClass = { 'Best Fit': 'best', 'Good Fit': 'good', 'Try pannu!': 'try' };
+
     parsed.suggestions.forEach(s => {
+      const imgUrl = getImage(s.title);
       const div = document.createElement('div');
       div.className = 'sug-card';
-      div.innerHTML =
-        `<span class="badge ${badgeClass[s.label] || 'good'}">${s.label}</span>
-         <div class="sug-title">${s.title}</div>
-         <div class="sug-caption">${s.caption}</div>`;
+      div.innerHTML = `
+        <div class="sug-img">
+          ${imgUrl ? `<img src="${imgUrl}" alt="${s.title}" onerror="this.parentElement.innerHTML='👗'"/>` : '👗'}
+        </div>
+        <div class="sug-body">
+          <span class="badge ${badgeClass[s.label] || 'good'}">${s.label}</span>
+          <div class="sug-title">${s.title}</div>
+          <div class="sug-caption">${s.caption}</div>
+        </div>`;
       cards.appendChild(div);
     });
 
     document.getElementById('extra-tips').innerHTML =
       `🧵 <b>Fabric tip:</b> ${parsed.fabric_tip}<br>` +
-      `👗 <b>Neck hint:</b> ${parsed.neck_hint}<br>` +
-      `🤫 <b>Selvi secret:</b> ${parsed.selvi_secret}`;
+      `👗 <b>Neck suggestion:</b> ${parsed.neck_hint}<br>` +
+      `🤫 <b>Tailor tip:</b> ${parsed.selvi_secret}`;
 
     document.getElementById('response').classList.add('visible');
     document.getElementById('restart').style.display = 'block';
 
   } catch (e) {
     document.getElementById('extra-tips').innerHTML =
-      `<span style="color:red">Selvi connect aagala akka! ${e.message}</span>`;
+      `<span style="color:red">Could not connect. Please try again! ${e.message}</span>`;
     document.getElementById('response').classList.add('visible');
     document.getElementById('restart').style.display = 'block';
   }
@@ -239,6 +287,7 @@ function resetAll() {
   document.getElementById('d1').classList.add('done');
   document.getElementById('next-btn').classList.remove('visible');
   document.getElementById('next-btn').textContent = 'Next →';
+  document.getElementById('prev-btn').classList.remove('visible');
   document.getElementById('response').classList.remove('visible');
   document.getElementById('restart').style.display = 'none';
   document.getElementById('loading').classList.remove('visible');
